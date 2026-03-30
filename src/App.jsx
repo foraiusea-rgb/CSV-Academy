@@ -522,14 +522,13 @@ export default function App(){
     {s.page==="scenarios"&&<div>
       <h1 style={{...heading(),marginBottom:'0.2rem'}}>Scenario-Based Questions</h1>
       <p style={{color:'var(--text2)',fontSize:'0.88rem',marginBottom:'1.25rem'}}>Real-world situations you'll face as a CSV engineer. These test critical thinking, not memorisation.</p>
-      {(SCENARIO_QUIZZES||[]).map((sq,si)=>{const[showSA,setShowSA]=useState?null:null;return<div key={sq.id} style={{...card,marginBottom:'1rem'}}>
+      {(SCENARIO_QUIZZES||[]).map((sq,si)=><div key={sq.id} style={{...card,marginBottom:'1rem'}}>
         <div style={{display:'flex',gap:'0.3rem',marginBottom:'0.4rem'}}><span style={tag(sq.difficulty==='Entry'?'var(--ok)':sq.difficulty==='Mid'?'var(--orange)':'var(--warn)',sq.difficulty==='Entry'?'var(--ok-bg)':sq.difficulty==='Mid'?'var(--orange-bg)':'var(--warn-bg)')}>{sq.difficulty}</span></div>
         <div style={{fontSize:'0.9rem',lineHeight:1.7,marginBottom:'0.6rem',padding:'0.75rem',background:'var(--surface2)',borderRadius:'var(--radius-sm)',borderLeft:'3px solid var(--purple)'}}>{sq.scenario}</div>
         <div style={{fontSize:'0.95rem',fontWeight:600,marginBottom:'0.5rem'}}>{sq.question}</div>
         <div style={{display:'grid',gap:'0.3rem',marginBottom:'0.6rem'}}>{sq.options.map((o,oi)=><div key={oi} style={{padding:'0.5rem 0.75rem',background:oi===sq.correct?'var(--ok-bg)':'var(--surface2)',border:`1px solid ${oi===sq.correct?'var(--ok)':'var(--border)'}`,borderRadius:'var(--radius-sm)',fontSize:'0.85rem',color:oi===sq.correct?'var(--ok)':'var(--text)',cursor:'default'}}>{String.fromCharCode(65+oi)}. {o} {oi===sq.correct&&' ✓'}</div>)}</div>
         <div style={{padding:'0.75rem',background:'var(--accent-bg)',borderRadius:'var(--radius-sm)',borderLeft:'3px solid var(--accent)',fontSize:'0.85rem',lineHeight:1.7,whiteSpace:'pre-wrap'}}><strong style={{color:'var(--accent)'}}>Explanation:</strong> {sq.explanation}</div>
-      </div>;})}
-    </div>}
+      </div>)}    </div>}
 
     {/* ═══ FLASHCARDS ═══ */}
     {s.page==="flashcards"&&<div>
