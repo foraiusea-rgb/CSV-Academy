@@ -1,71 +1,52 @@
-# CSV Academy v5.0 — Pharma Computer System Validation Learning Platform
+# CSV Academy v6.0 — Pharma CSV Learning Platform
 
-A comprehensive self-learning platform for **Computer System Validation (CSV)** in the pharmaceutical industry. Built for aspiring CSV Engineers targeting roles in **Ireland**.
+Complete rebuild with **deep course content** and **interactive simulator UIs**.
+
+## What Changed from v5
+
+| Area | v5 (old) | v6 (new) |
+|------|----------|----------|
+| Course depth | 158 words/lesson | **950+ words/lesson** (6x deeper) |
+| Simulators | AI text generation | **Real interactive React UIs** |
+| Exercises | None embedded | **Exercises with model answers in every lesson** |
+| Learning objectives | None | **Per-lesson objectives + self-check** |
 
 ## Features
 
-| Feature | Description |
-|---------|-------------|
-| 📚 **11 Course Modules** | Foundations → Advanced, sourced from 3 textbooks + regulations |
-| 🧠 **40 Quiz Questions** | Book-referenced, with wrong-answer tracking for spaced repetition |
-| 🎯 **25 Interview Questions** | Entry + Mid level with model answers |
-| 🎤 **AI Mock Interview** | Practice answering, AI scores 1-10 like a real interviewer |
-| 🧠 **Feynman Technique Game** | Explain concepts simply, AI scores accuracy/completeness/clarity |
-| 💻 **27 Simulator Scenarios** | LIMS, KNEAT, SCADA/PLC, SAP, MES, ValGenesis |
-| 🎚️ **Risk Calculator** | Stokes' weighted scoring system (Ch.16) — interactive tool |
-| 📖 **40-Term Glossary** | Searchable quick-reference from books + regulations |
-| 🤖 **Ask AI Tutor** | Free-form questions with regulatory-referenced answers |
-| 🔀 **8 Process Flowcharts** | SVG diagrams of key CSV workflows |
-| 📅 **12-Week Study Plan** | Checkable tasks mapped to modules |
-| 📝 **Lesson Notes** | Personal notes per lesson, persistently saved |
-| 🏆 **Module Badges** | Completion badges shown on dashboard |
-| 🔄 **Spaced Repetition** | Wrong quiz answers tracked, retry mode |
-| 🔍 **Content Search** | Search across lessons and glossary |
-| 🇮🇪 **Ireland Job Tracker** | AI-powered CSV job search |
-| 📥 **Progress Export** | Download all progress as JSON |
-| 📎 **Resources** | Direct links to regulations, guides, books |
+- **11 Course Modules** — Deep content from 3 reference books, with exercises and model answers
+- **🔬 LIMS Simulator** — Interactive UI with 5 screens: Sample Registration, Results Entry (live OOS detection), OOS Investigation workflow, Audit Trail Viewer
+- **40 Quiz Questions** — Wrong-answer tracking for spaced repetition
+- **25 Interview Questions** — Entry + Mid level with AI mock interview scoring
+- **Risk Calculator** — Stokes Ch.16 weighted scoring (interactive)
+- **40-Term Glossary** — Searchable
+- **8 Process Flowcharts** — SVG diagrams
+- **12-Week Study Plan** — Checkable tasks
+- **Feynman Game** — AI-scored concept explanation
+- **🇮🇪 Ireland Job Tracker** — AI-powered search
 
-## Reference Books
-
-1. **Testing Computer Systems for FDA/MHRA Compliance** — David Stokes
-2. **Validating Corporate Computer Systems** — Guy Wingate
-3. **Validating Pharmaceutical Systems** — John Andrews
-
-## Deploy to Vercel
+## Deploy
 
 1. Push to GitHub
-2. [vercel.com](https://vercel.com) → Import → Framework: **Vite** → Deploy
+2. Vercel → Import → Framework: **Vite** → Deploy
 
 ```bash
-# Local dev
-npm install
-npm run dev
+npm install && npm run dev
 ```
 
 ## AI Features
 
-Set your [OpenRouter](https://openrouter.ai) API key in Settings. Default model: `minimax/MiniMax-M1`.
+Set OpenRouter API key in Settings. Default model: `minimax/MiniMax-M1`.
 
-## Project Structure
+## Structure
 
 ```
-csv-academy/
-├── index.html
-├── package.json
-├── vite.config.js
-├── vercel.json
-├── src/
-│   ├── main.jsx
-│   ├── App.jsx          # Main app (all 13 tabs)
-│   ├── storage.js       # localStorage persistence
-│   └── data/
-│       ├── courses.js   # 11 modules, 24 lessons
-│       └── content.js   # Quizzes, interviews, sims, flowcharts, glossary, risk calc, study plan, resources
-└── public/
+src/
+├── App.jsx              # Main shell (12 tabs)
+├── store.js             # localStorage persistence
+├── data/
+│   ├── module1.js       # Module 1: Deep content (37KB, 4 lessons, 3819 words)
+│   ├── content.js       # All 11 modules + 40 quiz questions
+│   └── tools.js         # Interview, glossary, risk calc, flowcharts, study plan
+└── simulators/
+    └── LIMSSimulator.jsx  # Interactive LIMS UI (5 screens, 30KB)
 ```
-
-## Important
-
-After extracting the zip, **delete** the `{public,src}` folder — it's a zip artifact. The real `src/` folder contains all source files.
-
-All progress is stored in localStorage. Persists across sessions. Only cleared explicitly via Settings.
