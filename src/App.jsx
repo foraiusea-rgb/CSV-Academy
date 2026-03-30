@@ -3,6 +3,8 @@ import { store } from "./store.js";
 import { MODULES, QUIZ_BANK } from "./data/content.js";
 import { INTERVIEW_DATA, GLOSSARY, RISK_FACTORS, RISK_BANDS, FLOWCHARTS, FEYNMAN_TOPICS, STUDY_PLAN, RESOURCES } from "./data/tools.js";
 import LIMSSimulator from "./simulators/LIMSSimulator.jsx";
+import KNEATSimulator from "./simulators/KNEATSimulator.jsx";
+import SCADASimulator from "./simulators/SCADASimulator.jsx";
 
 const SK = "csv-v6";
 const DS = {tab:"dashboard",done:[],quizH:[],feynH:[],simH:[],mockIntH:[],notes:{},planTasks:{},wrongQs:[],cfg:{apiKey:"",model:"minimax/MiniMax-M1"}};
@@ -72,7 +74,8 @@ export default function App(){
   const renderFC=fc=>{const ns=fc.n;const W=580;const H=ns.length*46+16;return<svg viewBox={`0 0 ${W} ${H}`} style={{width:'100%',maxHeight:500,background:'#0B0E13',borderRadius:8,border:'1px solid #1C2333'}}><defs><marker id="a" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="7" markerHeight="5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#4ECDC4"/></marker></defs>{ns.map((_,i)=>i<ns.length-1?<line key={`e${i}`} x1={W/2} y1={i*46+34} x2={W/2} y2={(i+1)*46+6} stroke="#252D3D" strokeWidth={1.5} markerEnd="url(#a)"/>:null)}{ns.map((n,i)=><g key={i}><rect x={W/2-100} y={i*46+8} width={200} height={24} rx={5} fill="#1C2333" stroke={i===0?"#4ECDC4":i===ns.length-1?"#22C55E":"#252D3D"} strokeWidth={i===0||i===ns.length-1?1.5:0.5}/><text x={W/2} y={i*46+24} textAnchor="middle" fill="#E8ECF4" fontSize={9.5} fontFamily="system-ui">{n}</text></g>)}</svg>;};
 
   const tabs=[
-    {id:"dashboard",l:"📊 Dash"},{id:"course",l:"📚 Course"},{id:"lims-sim",l:"🔬 LIMS Sim"},
+    {id:"dashboard",l:"📊 Dash"},{id:"course",l:"📚 Course"},{id:"lims-sim",l:"🔬 LIMS"},
+    {id:"kneat-sim",l:"📝 KNEAT"},{id:"scada-sim",l:"⚙️ SCADA"},
     {id:"plan",l:"📅 Plan"},{id:"test",l:"🧠 Tests"},{id:"interview",l:"🎯 Interview"},
     {id:"risk",l:"🎚️ Risk"},{id:"glossary",l:"📖 Glossary"},{id:"flow",l:"🔀 Flows"},
     {id:"jobs",l:"🇮🇪 Jobs"},{id:"resources",l:"📎 Refs"},{id:"cfg",l:"⚙️"}
@@ -81,7 +84,7 @@ export default function App(){
   return<div style={{minHeight:'100vh',background:'#0B0E13',color:'#E8ECF4',fontFamily:"'Source Sans 3',system-ui,sans-serif"}}>
     <nav style={{position:'sticky',top:0,zIndex:100,background:'rgba(11,14,19,0.92)',backdropFilter:'blur(20px)',borderBottom:'1px solid #252D3D',display:'flex',alignItems:'center',padding:'0 0.4rem',overflowX:'auto'}}>
       <div style={{fontFamily:"'DM Serif Display',Georgia,serif",fontSize:'0.95rem',padding:'0.6rem 0.35rem',marginRight:'0.2rem',color:'#4ECDC4',whiteSpace:'nowrap',cursor:'pointer'}} onClick={()=>u({tab:'dashboard'})}>CSV Academy</div>
-      {tabs.map(t=><button key={t.id} onClick={()=>{u({tab:t.id});if(!['jobs','lims-sim'].includes(t.id))setAR("");}} style={{background:s.tab===t.id?'rgba(78,205,196,0.12)':'transparent',border:'none',color:s.tab===t.id?'#4ECDC4':'#8892A8',padding:'0.45rem 0.4rem',borderRadius:5,cursor:'pointer',fontSize:'0.65rem',fontWeight:500,whiteSpace:'nowrap',fontFamily:'inherit'}}>{t.l}</button>)}
+      {tabs.map(t=><button key={t.id} onClick={()=>{u({tab:t.id});if(!['jobs','lims-sim','kneat-sim','scada-sim'].includes(t.id))setAR("");}} style={{background:s.tab===t.id?'rgba(78,205,196,0.12)':'transparent',border:'none',color:s.tab===t.id?'#4ECDC4':'#8892A8',padding:'0.45rem 0.4rem',borderRadius:5,cursor:'pointer',fontSize:'0.65rem',fontWeight:500,whiteSpace:'nowrap',fontFamily:'inherit'}}>{t.l}</button>)}
     </nav>
     <div style={{maxWidth:1200,margin:'0 auto',padding:'1rem'}}>
 
@@ -189,6 +192,12 @@ export default function App(){
 
     {/* ═══ LIMS SIMULATOR ═══ */}
     {s.tab==="lims-sim"&&<LIMSSimulator onComplete={data=>u({simH:[...s.simH,{d:new Date().toISOString(),sim:'LIMS',...data}]})}/>}
+
+    {/* ═══ KNEAT SIMULATOR ═══ */}
+    {s.tab==="kneat-sim"&&<KNEATSimulator onComplete={data=>u({simH:[...s.simH,{d:new Date().toISOString(),sim:'KNEAT',...data}]})}/>}
+
+    {/* ═══ SCADA SIMULATOR ═══ */}
+    {s.tab==="scada-sim"&&<SCADASimulator onComplete={data=>u({simH:[...s.simH,{d:new Date().toISOString(),sim:'SCADA',...data}]})}/>}
 
     {/* ═══ STUDY PLAN ═══ */}
     {s.tab==="plan"&&<div>
