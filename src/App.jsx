@@ -545,7 +545,7 @@ export default function App(){
       <div style={{display:'grid',gap:'0.75rem'}}>
         {(COMPANIES||[]).map((c,ci)=><div key={ci} style={card}>
           <h3 style={{fontSize:'1.1rem',fontFamily:'var(--font-display)',marginBottom:'0.4rem'}}>{c.name}</h3>
-          <div style={{display:'grid',gridTemplateColumns:'auto 1fr',gap:'0.2rem 1rem',fontSize:'0.85rem',lineHeight:1.6'}}>
+          <div style={{display:'grid',gridTemplateColumns:'auto 1fr',gap:'0.2rem 1rem',fontSize:'0.85rem',lineHeight:1.6}}>
             <span style={{color:'var(--text3)',fontWeight:500}}>📍 Locations:</span><span>{c.locations}</span>
             <span style={{color:'var(--text3)',fontWeight:500}}>💊 Products:</span><span>{c.products}</span>
             <span style={{color:'var(--text3)',fontWeight:500}}>💻 Systems:</span><span style={{fontFamily:'var(--font-mono)',fontSize:'0.78rem'}}>{c.systems}</span>
