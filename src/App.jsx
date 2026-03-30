@@ -2,12 +2,15 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { store } from "./store.js";
 import { MODULES, QUIZ_BANK } from "./data/content.js";
 import { INTERVIEW_DATA, GLOSSARY, RISK_FACTORS, RISK_BANDS, FLOWCHARTS, FEYNMAN_TOPICS, STUDY_PLAN, RESOURCES, CAREER_DATA, TEMPLATES } from "./data/tools.js";
+import { CASE_STUDY } from "./data/casestudy.js";
+import { COMPANIES, SCENARIO_QUIZZES } from "./data/companies.js";
+import { SearchBox, Flashcards, StreakDisplay, PeerComparison, DarkModeToggle, AudioReader, JobTracker, LinkedInShare, AIDocReviewer, MockInspection, SpacedRepetition } from "./components/Features.jsx";
 import LIMSSimulator from "./simulators/LIMSSimulator.jsx";
 import KNEATSimulator from "./simulators/KNEATSimulator.jsx";
 import SCADASimulator from "./simulators/SCADASimulator.jsx";
 
 const SK="csv-v6";
-const DS={page:"home",section:null,done:[],quizH:[],feynH:[],simH:[],mockIntH:[],notes:{},planTasks:{},wrongQs:[],onboarded:false,cfg:{apiKey:"",model:"minimax/MiniMax-M1"}};
+const DS={page:"home",section:null,done:[],quizH:[],feynH:[],simH:[],mockIntH:[],notes:{},planTasks:{},wrongQs:[],onboarded:false,jobApps:[],cfg:{apiKey:"",model:"minimax/MiniMax-M1"}};
 
 export default function App(){
   const[s,setS]=useState(DS);
@@ -95,18 +98,19 @@ export default function App(){
   // ═══ NAVIGATION ═══
   const sections=[
     {id:"learn",label:"Learn",icon:"📚",items:[
-      {id:"home",label:"Dashboard"},{id:"course",label:"Course Modules"},{id:"plan",label:"Study Plan"},
+      {id:"home",label:"Dashboard"},{id:"course",label:"Course Modules"},{id:"casestudy",label:"Case Study"},{id:"plan",label:"Study Plan"},
     ]},
     {id:"practice",label:"Practice",icon:"🔬",items:[
       {id:"lims",label:"LIMS Simulator"},{id:"kneat",label:"KNEAT Protocol"},{id:"scada",label:"SCADA Dashboard"},
-      {id:"quiz",label:"Quizzes & Feynman"},
+      {id:"quiz",label:"Quizzes"},{id:"scenarios",label:"Scenario Quizzes"},{id:"flashcards",label:"Flashcards"},
     ]},
     {id:"prepare",label:"Prepare",icon:"🎯",items:[
-      {id:"interview",label:"Interview Prep"},{id:"career",label:"Career Tools"},{id:"jobs",label:"Ireland Jobs"},
+      {id:"interview",label:"Interview Prep"},{id:"inspection",label:"Mock Inspection"},{id:"career",label:"Career Tools"},
+      {id:"companies",label:"Company Profiles"},{id:"jobtracker",label:"Job Tracker"},{id:"jobs",label:"AI Job Search"},
     ]},
     {id:"reference",label:"Reference",icon:"📖",items:[
       {id:"glossary",label:"Glossary"},{id:"risk",label:"Risk Calculator"},{id:"flows",label:"Flowcharts"},
-      {id:"resources",label:"Resources"},{id:"templates",label:"Templates"},{id:"settings",label:"Settings"},
+      {id:"resources",label:"Resources"},{id:"templates",label:"Templates"},{id:"docreview",label:"AI Doc Reviewer"},{id:"settings",label:"Settings"},
     ]},
   ];
 
@@ -132,12 +136,23 @@ export default function App(){
       </nav>
 
       <div style={{display:'flex',alignItems:'center',gap:'0.5rem'}}>
-        <div style={{...tag('var(--ok)','var(--ok-bg)'),fontSize:'0.72rem'}}>{pP}% complete</div>
+        <SearchBox modules={MODULES} glossary={GLOSSARY} onNavigate={r=>{if(r.id){nav('course');setTimeout(()=>setXL(r.id),100);}else nav('glossary');}} />
+        <DarkModeToggle />
+        <div style={{...tag('var(--ok)','var(--ok-bg)'),fontSize:'0.72rem'}}>{pP}%</div>
       </div>
     </header>
 
     {/* Click overlay to close dropdowns */}
     {s.section&&<div onClick={()=>u({section:null})} style={{position:'fixed',inset:0,zIndex:40}}/>}
+
+    {/* Mobile bottom nav */}
+    <div className="mobile-nav" style={{display:'none',position:'fixed',bottom:0,left:0,right:0,zIndex:100,background:'var(--surface)',borderTop:'1px solid var(--border)',padding:'0.4rem',gap:'0.2rem',justifyContent:'space-around'}}>
+      {[{id:'home',icon:'📊',l:'Dash'},{id:'course',icon:'📚',l:'Learn'},{id:'lims',icon:'🔬',l:'Sim'},{id:'quiz',icon:'🧠',l:'Quiz'},{id:'interview',icon:'🎯',l:'Prep'},{id:'settings',icon:'⚙️',l:'More'}].map(t=>
+        <button key={t.id} onClick={()=>nav(t.id)} style={{background:s.page===t.id?'var(--accent-bg)':'transparent',border:'none',padding:'0.3rem 0.5rem',borderRadius:6,cursor:'pointer',textAlign:'center',fontFamily:'var(--font-body)',color:s.page===t.id?'var(--accent)':'var(--text3)',fontSize:'0.62rem'}}>
+          <div style={{fontSize:'1.1rem'}}>{t.icon}</div>{t.l}
+        </button>
+      )}
+    </div>
 
     <main style={{maxWidth:1100,margin:'0 auto',padding:'1.5rem',animation:'fadeIn 0.3s ease'}}>
 
@@ -211,6 +226,13 @@ export default function App(){
           <div><div style={{fontSize:'0.85rem',fontWeight:600}}>{q.title}</div><div style={{fontSize:'0.72rem',color:'var(--text3)'}}>{q.desc}</div></div>
         </div>)}
       </div>
+
+      {/* Motivation + review widgets */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))',gap:'0.75rem',marginTop:'1.25rem'}}>
+        <StreakDisplay quizH={s.quizH} feynH={s.feynH} simH={s.simH} done={s.done}/>
+        <div><PeerComparison pP={pP} quizAvg={s.quizH.length?Math.round(s.quizH.reduce((a,x)=>a+x.p,0)/s.quizH.length):0} lessonsCompleted={s.done.length} totalLessons={tL}/><div style={{marginTop:'0.6rem'}}><SpacedRepetition wrongQs={s.wrongQs} quizH={s.quizH} feynH={s.feynH}/></div></div>
+      </div>
+      {pP>0&&<div style={{marginTop:'0.75rem',display:'flex',alignItems:'center',gap:'0.6rem'}}><LinkedInShare moduleName={`${s.done.length} CSV lessons`} progress={pP}/><span style={{fontSize:'0.78rem',color:'var(--text3)'}}>Share your progress</span></div>}
     </div>}
 
     {/* ═══ COURSE ═══ */}
@@ -248,6 +270,7 @@ export default function App(){
                   <div style={{fontSize:'0.75rem',fontWeight:600,color:'var(--accent)',marginBottom:'0.3rem'}}>🎯 Learning Objectives</div>
                   <ul style={{fontSize:'0.82rem',color:'var(--text2)',paddingLeft:'1.2rem',lineHeight:1.6,margin:0}}>{l.objectives.map((o,i)=><li key={i}>{o}</li>)}</ul>
                 </div>}
+                <div style={{display:'flex',justifyContent:'flex-end',marginBottom:'0.3rem'}}><AudioReader text={l.content}/></div>
                 <div style={{fontSize:'0.88rem',lineHeight:1.85,color:'var(--text)',whiteSpace:'pre-wrap',marginBottom:'1rem'}}>{l.content}</div>
                 {l.exercise&&<div style={{marginBottom:'1rem',border:'1px solid var(--border)',borderRadius:'var(--radius)',overflow:'hidden'}}>
                   <div onClick={()=>setShowEx(showEx===l.id?null:l.id)} style={{padding:'0.75rem 1rem',background:'var(--surface2)',cursor:'pointer',display:'flex',alignItems:'center',gap:'0.4rem'}}>
@@ -472,6 +495,91 @@ export default function App(){
         </div>
         <div style={{display:'flex',gap:'0.4rem'}}><button onClick={exportP} style={btn()}>📥 Export Progress</button><button onClick={clearD} style={btn('var(--warn)')}>Reset All</button></div>
       </div>
+    </div>}
+
+    {/* ═══ CASE STUDY ═══ */}
+    {s.page==="casestudy"&&<div>
+      <h1 style={{...heading(),marginBottom:'0.2rem'}}>{CASE_STUDY.title}</h1>
+      <p style={{color:'var(--text2)',fontSize:'0.88rem',marginBottom:'0.3rem'}}>{CASE_STUDY.subtitle}</p>
+      <div style={{display:'flex',gap:'0.5rem',marginBottom:'1rem',fontSize:'0.78rem',color:'var(--text3)',flexWrap:'wrap'}}>
+        <span>🏭 {CASE_STUDY.company}</span><span>💻 {CASE_STUDY.system}</span><span>📅 {CASE_STUDY.duration}</span>
+      </div>
+      <div style={{...card,marginBottom:'1.25rem',borderLeft:'4px solid var(--accent)',fontSize:'0.88rem',lineHeight:1.8,whiteSpace:'pre-wrap'}}>{CASE_STUDY.overview}</div>
+      {CASE_STUDY.phases.map((p,i)=><div key={p.id} style={{...card,marginBottom:'0.75rem'}}>
+        <div style={{display:'flex',alignItems:'center',gap:'0.5rem',marginBottom:'0.5rem'}}>
+          <span style={tag()}>{p.week}</span>
+          <h3 style={{fontSize:'1.05rem',fontFamily:'var(--font-display)'}}>{p.title}</h3>
+        </div>
+        <div style={{fontSize:'0.88rem',lineHeight:1.85,whiteSpace:'pre-wrap',color:'var(--text)'}}>{p.content}</div>
+      </div>)}
+      {CASE_STUDY.keyLessons&&<div style={{...card,borderLeft:'4px solid var(--ok)'}}>
+        <h3 style={{fontSize:'1rem',fontFamily:'var(--font-display)',marginBottom:'0.5rem',color:'var(--ok)'}}>🎓 Key Lessons Learned</h3>
+        <ul style={{fontSize:'0.85rem',lineHeight:1.8,paddingLeft:'1.2rem',color:'var(--text)'}}>{CASE_STUDY.keyLessons.map((l,i)=><li key={i}>{l}</li>)}</ul>
+      </div>}
+    </div>}
+
+    {/* ═══ SCENARIO QUIZZES ═══ */}
+    {s.page==="scenarios"&&<div>
+      <h1 style={{...heading(),marginBottom:'0.2rem'}}>Scenario-Based Questions</h1>
+      <p style={{color:'var(--text2)',fontSize:'0.88rem',marginBottom:'1.25rem'}}>Real-world situations you'll face as a CSV engineer. These test critical thinking, not memorisation.</p>
+      {(SCENARIO_QUIZZES||[]).map((sq,si)=>{const[showSA,setShowSA]=useState?null:null;return<div key={sq.id} style={{...card,marginBottom:'1rem'}}>
+        <div style={{display:'flex',gap:'0.3rem',marginBottom:'0.4rem'}}><span style={tag(sq.difficulty==='Entry'?'var(--ok)':sq.difficulty==='Mid'?'var(--orange)':'var(--warn)',sq.difficulty==='Entry'?'var(--ok-bg)':sq.difficulty==='Mid'?'var(--orange-bg)':'var(--warn-bg)')}>{sq.difficulty}</span></div>
+        <div style={{fontSize:'0.9rem',lineHeight:1.7,marginBottom:'0.6rem',padding:'0.75rem',background:'var(--surface2)',borderRadius:'var(--radius-sm)',borderLeft:'3px solid var(--purple)'}}>{sq.scenario}</div>
+        <div style={{fontSize:'0.95rem',fontWeight:600,marginBottom:'0.5rem'}}>{sq.question}</div>
+        <div style={{display:'grid',gap:'0.3rem',marginBottom:'0.6rem'}}>{sq.options.map((o,oi)=><div key={oi} style={{padding:'0.5rem 0.75rem',background:oi===sq.correct?'var(--ok-bg)':'var(--surface2)',border:`1px solid ${oi===sq.correct?'var(--ok)':'var(--border)'}`,borderRadius:'var(--radius-sm)',fontSize:'0.85rem',color:oi===sq.correct?'var(--ok)':'var(--text)',cursor:'default'}}>{String.fromCharCode(65+oi)}. {o} {oi===sq.correct&&' ✓'}</div>)}</div>
+        <div style={{padding:'0.75rem',background:'var(--accent-bg)',borderRadius:'var(--radius-sm)',borderLeft:'3px solid var(--accent)',fontSize:'0.85rem',lineHeight:1.7,whiteSpace:'pre-wrap'}}><strong style={{color:'var(--accent)'}}>Explanation:</strong> {sq.explanation}</div>
+      </div>;})}
+    </div>}
+
+    {/* ═══ FLASHCARDS ═══ */}
+    {s.page==="flashcards"&&<div>
+      <h1 style={{...heading(),marginBottom:'0.2rem'}}>Flashcards</h1>
+      <p style={{color:'var(--text2)',fontSize:'0.88rem',marginBottom:'1.25rem'}}>Swipeable study cards for all {(GLOSSARY||[]).length} key terms. Mark cards as mastered to remove them from the deck.</p>
+      <div style={{maxWidth:500,margin:'0 auto'}}><Flashcards glossary={GLOSSARY}/></div>
+    </div>}
+
+    {/* ═══ COMPANY PROFILES ═══ */}
+    {s.page==="companies"&&<div>
+      <h1 style={{...heading(),marginBottom:'0.2rem'}}>Irish Pharma Company Profiles</h1>
+      <p style={{color:'var(--text2)',fontSize:'0.88rem',marginBottom:'1.25rem'}}>Intelligence on the companies you'll be interviewing at. What they make, what systems they use, and insider tips.</p>
+      <div style={{display:'grid',gap:'0.75rem'}}>
+        {(COMPANIES||[]).map((c,ci)=><div key={ci} style={card}>
+          <h3 style={{fontSize:'1.1rem',fontFamily:'var(--font-display)',marginBottom:'0.4rem'}}>{c.name}</h3>
+          <div style={{display:'grid',gridTemplateColumns:'auto 1fr',gap:'0.2rem 1rem',fontSize:'0.85rem',lineHeight:1.6'}}>
+            <span style={{color:'var(--text3)',fontWeight:500}}>📍 Locations:</span><span>{c.locations}</span>
+            <span style={{color:'var(--text3)',fontWeight:500}}>💊 Products:</span><span>{c.products}</span>
+            <span style={{color:'var(--text3)',fontWeight:500}}>💻 Systems:</span><span style={{fontFamily:'var(--font-mono)',fontSize:'0.78rem'}}>{c.systems}</span>
+            <span style={{color:'var(--text3)',fontWeight:500}}>👤 CSV Roles:</span><span>{c.csvRoles}</span>
+            <span style={{color:'var(--text3)',fontWeight:500}}>🎯 Interview:</span><span>{c.interviewStyle}</span>
+          </div>
+          <div style={{marginTop:'0.6rem',padding:'0.6rem',background:'var(--accent-bg)',borderRadius:'var(--radius-sm)',fontSize:'0.82rem',borderLeft:'3px solid var(--accent)'}}>
+            <strong style={{color:'var(--accent)'}}>💡 Insider Tip:</strong> {c.tipFromInsiders}
+          </div>
+        </div>)}
+      </div>
+    </div>}
+
+    {/* ═══ JOB TRACKER ═══ */}
+    {s.page==="jobtracker"&&<div>
+      <h1 style={{...heading(),marginBottom:'0.2rem'}}>Job Application Tracker</h1>
+      <p style={{color:'var(--text2)',fontSize:'0.88rem',marginBottom:'1.25rem'}}>Track your CSV job applications across Irish pharma companies.</p>
+      <JobTracker jobs={s.jobApps} onUpdate={j=>u({jobApps:j})}/>
+    </div>}
+
+    {/* ═══ AI DOCUMENT REVIEWER ═══ */}
+    {s.page==="docreview"&&<div>
+      <h1 style={{...heading(),marginBottom:'0.2rem'}}>AI Document Reviewer</h1>
+      <p style={{color:'var(--text2)',fontSize:'0.88rem',marginBottom:'1.25rem'}}>Paste your URS, OQ test script, or VP draft. AI reviews it against CSV best practices and gives specific improvement suggestions.</p>
+      {!s.cfg.apiKey&&<div style={{...cardSm,borderLeft:'3px solid var(--warn)',marginBottom:'0.75rem',color:'var(--warn)',fontSize:'0.85rem'}}>Set your OpenRouter API key in Settings to use this feature.</div>}
+      <AIDocReviewer callAI={callAI} isLoading={aL} response={aR}/>
+    </div>}
+
+    {/* ═══ MOCK HPRA INSPECTION ═══ */}
+    {s.page==="inspection"&&<div>
+      <h1 style={{...heading(),marginBottom:'0.2rem'}}>Mock HPRA Inspection</h1>
+      <p style={{color:'var(--text2)',fontSize:'0.88rem',marginBottom:'1.25rem'}}>AI plays an HPRA inspector. You play the CSV lead defending your validation programme. Get scored on your responses.</p>
+      {!s.cfg.apiKey&&<div style={{...cardSm,borderLeft:'3px solid var(--warn)',marginBottom:'0.75rem',color:'var(--warn)',fontSize:'0.85rem'}}>Set your OpenRouter API key in Settings to use this feature.</div>}
+      <MockInspection callAI={callAI} isLoading={aL} response={aR}/>
     </div>}
 
     </main>

@@ -2,10 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="theme-color" content="#0D9488"/>
 <title>CSV Academy — Pharma Validation Training</title>
-<meta name="description" content="Master Computer System Validation for pharmaceutical careers in Ireland. Interactive simulators, deep course content, interview preparation."/>
+<meta name="description" content="Free platform to master Computer System Validation for pharmaceutical careers in Ireland."/>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💊</text></svg>"/>
+<link rel="manifest" href="/manifest.json"/>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -34,10 +38,29 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);line-he
 ::-webkit-scrollbar-thumb:hover{background:var(--accent)}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
+
+/* Mobile responsive */
+@media(max-width:768px){
+  header{padding:0 0.75rem !important}
+  header nav{display:none !important}
+  main{padding:0.75rem !important}
+  .desktop-only{display:none !important}
+  .mobile-nav{display:flex !important}
+}
+@media(min-width:769px){
+  .mobile-nav{display:none !important}
+}
 </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="module" src="/src/main.jsx"></script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('/sw.js').catch(()=>{});
+  });
+}
+</script>
 </body>
 </html>
